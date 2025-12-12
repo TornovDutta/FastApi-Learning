@@ -48,4 +48,18 @@ def update(id: int, requested: schemas.Blogs, db: Session = Depends(get_db)):
     db.commit()
     return blog_query.first()
 
-# @app.delete("/delete",status_code=status.HTTP_204_NO_CONTENT)
+
+@app.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete(id: int, db: Session = Depends(get_db)):
+    blog = db.query(model.Blogs).filter(model.Blogs.id == id).first()
+
+    if not blog:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Blog not found"
+        )
+
+    db.delete(blog)
+    db.commit()
+
+    return None
